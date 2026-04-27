@@ -17,9 +17,17 @@ A solução será uma **Aplicação Desktop** desenvolvida com foco em arquitetu
 
 ---
 
-## 4. Requisitos do Sistema
+## 4. Documentação
 
-### 4.1 Requisitos Funcionais (RF)
+| Documento | Descrição |
+| :--- | :--- |
+| [📐 Arquitetura do Sistema](./docs/architecture.md) | Modelo C4 completo (Contexto, Container, Componente e Código), escolhas de tecnologias e justificativas arquiteturais |
+
+---
+
+## 5. Requisitos do Sistema
+
+### 5.1 Requisitos Funcionais (RF)
 
 | ID | Requisito | Descrição |
 | :--- | :--- | :--- |
@@ -29,7 +37,7 @@ A solução será uma **Aplicação Desktop** desenvolvida com foco em arquitetu
 | **RF04** | Registro de Destinação | Deve ser possível registrar para qual entidade ou cooperativa o resíduo foi enviado. |
 | **RF05** | Relatório de Sustentabilidade | Gerar um relatório consolidado com o peso total de material desviado de aterros comuns. |
 
-### 4.2 Requisitos Não Funcionais (RNF)
+### 5.2 Requisitos Não Funcionais (RNF)
 
 | ID | Requisito | Categoria | Descrição |
 | :--- | :--- | :--- | :--- |
@@ -40,7 +48,7 @@ A solução será uma **Aplicação Desktop** desenvolvida com foco em arquitetu
 
 ---
 
-## 5. Diagrama de Caso de Uso
+## 6. Diagrama de Caso de Uso
 
 O sistema possui dois perfis principais de interação: o **Gestor de TI**, responsável pela manutenção do inventário, e o **Auditor Ambiental**, que valida os relatórios de descarte.
 
@@ -48,7 +56,7 @@ O sistema possui dois perfis principais de interação: o **Gestor de TI**, resp
 
 ---
 
-## 6. Planejamento de Projeto
+## 7. Planejamento de Projeto
 
 O acompanhamento das tarefas é realizado através do **GitHub Projects**, organizado da seguinte forma:
 
