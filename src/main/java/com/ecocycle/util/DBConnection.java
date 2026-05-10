@@ -47,12 +47,14 @@ public class DBConnection {
                 throw new RuntimeException("schema.sql nao encontrado em resources/db/");
             }
             String sql = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))
-                    .lines().collect(Collectors.joining("\n"));
+                    .lines()
+                    .filter(line -> !line.trim().startsWith("--"))
+                    .collect(Collectors.joining("\n"));
 
             try (Statement stmt = connection.createStatement()) {
                 for (String statement : sql.split(";")) {
                     String trimmed = statement.trim();
-                    if (!trimmed.isEmpty() && !trimmed.startsWith("--")) {
+                    if (!trimmed.isEmpty()) {
                         stmt.execute(trimmed);
                     }
                 }
