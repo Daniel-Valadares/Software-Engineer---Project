@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="16" xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.ecocycle.controller.ReportController">
+    <padding><Insets top="16" right="20" bottom="16" left="20"/></padding>
+
+    <!-- Cartoes de estatisticas -->
+    <VBox spacing="12" styleClass="card">
+        <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Relatorio de Impacto Ambiental (RF04)" styleClass="section-title" HBox.hgrow="ALWAYS"/>
+            <Button text="Atualizar" onAction="#onRefresh" styleClass="primary-button"/>
+            <Button text="Exportar .txt" onAction="#onExport"/>
+        </HBox>
+
+        <Separator/>
+
+        <GridPane hgap="40" vgap="8">
+            <!-- Inventario -->
+            <Label text="INVENTARIO DE ATIVOS" styleClass="report-group-title"
+                   GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.columnSpan="4"/>
+
+            <Label text="Total cadastrado:"    GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <Label fx:id="rptTotal"   text="0" GridPane.rowIndex="1" GridPane.columnIndex="1" styleClass="stat-value-sm"/>
+            <Label text="Em uso:"              GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+            <Label fx:id="rptActive"  text="0" GridPane.rowIndex="1" GridPane.columnIndex="3" styleClass="stat-value-sm"/>
+
+            <Label text="Expirando:"           GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <Label fx:id="rptExpiring" text="0" GridPane.rowIndex="2" GridPane.columnIndex="1" styleClass="stat-value-sm"/>
+            <Label text="Prazo vencido:"       GridPane.rowIndex="2" GridPane.columnIndex="2"/>
+            <Label fx:id="rptOverdue"  text="0" GridPane.rowIndex="2" GridPane.columnIndex="3" styleClass="stat-value-sm"/>
+
+            <Label text="Descartados:"         GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+            <Label fx:id="rptDisposed" text="0" GridPane.rowIndex="3" GridPane.columnIndex="1" styleClass="stat-value-sm"/>
+
+            <!-- Descartes -->
+            <Label text="DESCARTES REALIZADOS" styleClass="report-group-title"
+                   GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.columnSpan="4"/>
+
+            <Label text="Disco sanitizado:"    GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+            <Label fx:id="rptDiskSanitized" text="0" GridPane.rowIndex="5" GridPane.columnIndex="1" styleClass="stat-value-sm"/>
+            <Label text="Bateria removida:"    GridPane.rowIndex="5" GridPane.columnIndex="2"/>
+            <Label fx:id="rptBatteryRemoved" text="0" GridPane.rowIndex="5" GridPane.columnIndex="3" styleClass="stat-value-sm"/>
+
+            <!-- Periculosidade -->
+            <Label text="PERICULOSIDADE (RF05)" styleClass="report-group-title"
+                   GridPane.rowIndex="6" GridPane.columnIndex="0" GridPane.columnSpan="4"/>
+
+            <Label text="Alta:"    GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+            <Label fx:id="rptHigh"   text="0" GridPane.rowIndex="7" GridPane.columnIndex="1" styleClass="stat-value-sm"/>
+            <Label text="Media:"   GridPane.rowIndex="7" GridPane.columnIndex="2"/>
+            <Label fx:id="rptMedium" text="0" GridPane.rowIndex="7" GridPane.columnIndex="3" styleClass="stat-value-sm"/>
+
+            <Label text="Baixa:"   GridPane.rowIndex="8" GridPane.columnIndex="0"/>
+            <Label fx:id="rptLow"    text="0" GridPane.rowIndex="8" GridPane.columnIndex="1" styleClass="stat-value-sm"/>
+
+            <!-- Impacto -->
+            <Label text="IMPACTO AMBIENTAL ESTIMADO" styleClass="report-group-title"
+                   GridPane.rowIndex="9" GridPane.columnIndex="0" GridPane.columnSpan="4"/>
+
+            <Label text="CO2 evitado:"           GridPane.rowIndex="10" GridPane.columnIndex="0"/>
+            <Label fx:id="rptCo2"    text="0 kg" GridPane.rowIndex="10" GridPane.columnIndex="1" styleClass="stat-value-sm"/>
+            <Label text="E-lixo evitado:"        GridPane.rowIndex="10" GridPane.columnIndex="2"/>
+            <Label fx:id="rptEwaste" text="0 kg" GridPane.rowIndex="10" GridPane.columnIndex="3" styleClass="stat-value-sm"/>
+
+            <Label text="Agua economizada:"      GridPane.rowIndex="11" GridPane.columnIndex="0"/>
+            <Label fx:id="rptWater"  text="0 L"  GridPane.rowIndex="11" GridPane.columnIndex="1" styleClass="stat-value-sm"/>
+        </GridPane>
+    </VBox>
+
+    <!-- Relatorio completo em texto -->
+    <VBox spacing="6" styleClass="card" VBox.vgrow="ALWAYS">
+        <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
+        <Label text="Relatorio Completo" styleClass="section-title"/>
+        <TextArea fx:id="reportArea" editable="false" VBox.vgrow="ALWAYS"
+                  style="-fx-font-family: 'Courier New', monospace; -fx-font-size: 12px;"/>
+    </VBox>
+</VBox>

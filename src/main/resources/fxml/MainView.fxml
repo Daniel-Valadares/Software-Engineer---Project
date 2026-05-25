@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            prefWidth="1100.0" prefHeight="720.0"
+            stylesheets="@../css/styles.css">
+
+    <top>
+        <VBox spacing="4" styleClass="header">
+            <padding>
+                <Insets top="14" right="20" bottom="14" left="20"/>
+            </padding>
+            <Label text="EcoCycle Manager" styleClass="title">
+                <font><Font name="System Bold" size="22"/></font>
+            </Label>
+            <Label text="Sistema de Logistica Reversa de Hardware (ODS 12)" styleClass="subtitle"/>
+        </VBox>
+    </top>
+
+    <center>
+        <TabPane tabClosingPolicy="UNAVAILABLE" styleClass="main-tabs">
+
+            <Tab text="Ativos (RF01 / RF05)">
+                <fx:include source="AssetView.fxml"/>
+            </Tab>
+
+            <Tab text="Monitoramento (RF02)">
+                <fx:include source="MonitoringView.fxml"/>
+            </Tab>
+
+            <Tab text="Descarte (RF03)">
+                <fx:include source="DisposalView.fxml"/>
+            </Tab>
+
+            <Tab text="Relatorio (RF04)">
+                <fx:include source="ReportView.fxml"/>
+            </Tab>
+
+        </TabPane>
+    </center>
+
+</BorderPane>
