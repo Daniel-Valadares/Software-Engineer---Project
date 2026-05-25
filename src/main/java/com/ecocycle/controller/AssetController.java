@@ -6,24 +6,21 @@ import com.ecocycle.service.AssetService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
 
 /**
- * Controller JavaFX para a tela de cadastro/listagem de ativos (RF01).
+ * Controller JavaFX para a tela de cadastro/listagem de ativos (RF01 / RF02 / RF05).
  */
 public class AssetController {
 
+    // --- Formulario ---
     @FXML private TextField idField;
     @FXML private TextField categoryField;
     @FXML private TextField modelField;
@@ -34,32 +31,48 @@ public class AssetController {
     @FXML private Button saveButton;
     @FXML private Button clearButton;
     @FXML private Button deleteButton;
+    @FXML private Label  feedbackLabel;
 
-    @FXML private TableView<Asset> assetsTable;
-    @FXML private TableColumn<Asset, String> colId;
-    @FXML private TableColumn<Asset, String> colCategory;
-    @FXML private TableColumn<Asset, String> colModel;
-    @FXML private TableColumn<Asset, String> colAcquired;
-    @FXML private TableColumn<Asset, String> colLifespan;
-    @FXML private TableColumn<Asset, String> colExpiration;
-    @FXML private TableColumn<Asset, String> colStatus;
+    // --- Filtros (RF05) ---
+    @FXML private ComboBox<String> hazardFilter;
+    @FXML private TextField        searchField;
 
-    @FXML private Label feedbackLabel;
+    // --- Tabela ---
+    @FXML private TableView<Asset>            assetsTable;
+    @FXML private TableColumn<Asset, String>  colId;
+    @FXML private TableColumn<Asset, String>  colCategory;
+    @FXML private TableColumn<Asset, String>  colModel;
+    @FXML private TableColumn<Asset, String>  colAcquired;
+    @FXML private TableColumn<Asset, String>  colLifespan;
+    @FXML private TableColumn<Asset, String>  colExpiration;
+    @FXML private TableColumn<Asset, String>  colStatus;
+    @FXML private TableColumn<Asset, String>  colHazard;
+    @FXML private TableColumn<Asset, String>  colDeprec;
 
     private final AssetService service = new AssetService();
-    private final ObservableList<Asset> assets = FXCollections.observableArrayList();
+    private final ObservableList<Asset> allAssets     = FXCollections.observableArrayList();
+    private final FilteredList<Asset>   filteredAssets = new FilteredList<>(allAssets, a -> true);
     private final DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private boolean editMode = false;
 
     @FXML
     public void initialize() {
+        // Status combo
         statusCombo.setItems(FXCollections.observableArrayList(Asset.Status.values()));
         statusCombo.getSelectionModel().select(Asset.Status.ACTIVE);
 
+        // Filtro de periculosidade (RF05)
+        List<String> hazardOptions = Arrays.asList("Todas", "Alta", "Media", "Baixa");
+        hazardFilter.setItems(FXCollections.observableArrayList(hazardOptions));
+        hazardFilter.getSelectionModel().select("Todas");
+        hazardFilter.setOnAction(e -> applyFilter());
+        searchField.textProperty().addListener((obs, o, n) -> applyFilter());
+
+        // Colunas da tabela
         colId.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getId()));
         colCategory.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getCategory()));
         colModel.setCellValueFactory(c -> new SimpleStringProperty(
-                c.getValue().getModel() == null ? "" : c.getValue().getModel()));
+                nvl(c.getValue().getModel())));
         colAcquired.setCellValueFactory(c -> new SimpleStringProperty(
                 c.getValue().getAcquiredAt().format(dateFmt)));
         colLifespan.setCellValueFactory(c -> new SimpleStringProperty(
@@ -68,10 +81,32 @@ public class AssetController {
                 c.getValue().getExpirationDate().format(dateFmt)));
         colStatus.setCellValueFactory(c -> new SimpleStringProperty(
                 c.getValue().getStatus().getValue()));
+        // RF05 — periculosidade
+        colHazard.setCellValueFactory(c -> new SimpleStringProperty(
+                c.getValue().getHazardLevel().getLabel()));
+        // RF02 — depreciacao
+        colDeprec.setCellValueFactory(c -> new SimpleStringProperty(
+                c.getValue().getDepreciationPercent() + "%"));
 
-        assetsTable.setItems(assets);
+        // RF02 — colorir linhas por status
+        assetsTable.setRowFactory(tv -> new TableRow<Asset>() {
+            @Override
+            protected void updateItem(Asset item, boolean empty) {
+                super.updateItem(item, empty);
+                getStyleClass().removeAll("row-overdue", "row-expiring", "row-disposed", "row-active");
+                if (item == null || empty) return;
+                switch (item.getStatus()) {
+                    case OVERDUE   -> getStyleClass().add("row-overdue");
+                    case EXPIRING  -> getStyleClass().add("row-expiring");
+                    case DISPOSED  -> getStyleClass().add("row-disposed");
+                    default        -> getStyleClass().add("row-active");
+                }
+            }
+        });
 
-        assetsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
+        assetsTable.setItems(filteredAssets);
+
+        assetsTable.getSelectionModel().selectedItemProperty().addListener((obs, o, newSel) -> {
             if (newSel != null) {
                 loadIntoForm(newSel);
                 editMode = true;
@@ -89,7 +124,7 @@ public class AssetController {
             Asset asset = new Asset();
             asset.setId(idField.getText().trim());
             asset.setCategory(categoryField.getText().trim());
-            asset.setModel(modelField.getText() == null ? "" : modelField.getText().trim());
+            asset.setModel(nvl(modelField.getText()).trim());
             asset.setAcquiredAt(acquiredAtPicker.getValue());
             asset.setLifespanYears(parseIntSafe(lifespanField.getText()));
             asset.setStatus(statusCombo.getValue());
@@ -143,17 +178,49 @@ public class AssetController {
         });
     }
 
+    /** Limpa filtros de periculosidade e texto (RF05). */
+    @FXML
+    private void onClearFilter() {
+        hazardFilter.getSelectionModel().select("Todas");
+        searchField.clear();
+    }
+
+    // -----------------------------------------------------------------------
+    // Internos
+    // -----------------------------------------------------------------------
+
+    private void applyFilter() {
+        String hazardSel = hazardFilter.getValue();
+        String text      = searchField.getText() == null ? "" : searchField.getText().toLowerCase();
+
+        filteredAssets.setPredicate(asset -> {
+            // Filtro de periculosidade
+            if (hazardSel != null && !hazardSel.equals("Todas")) {
+                if (!asset.getHazardLevel().getLabel().equalsIgnoreCase(hazardSel)) return false;
+            }
+            // Filtro de texto livre
+            if (!text.isBlank()) {
+                boolean match = asset.getId().toLowerCase().contains(text)
+                             || asset.getCategory().toLowerCase().contains(text)
+                             || (asset.getModel() != null && asset.getModel().toLowerCase().contains(text));
+                if (!match) return false;
+            }
+            return true;
+        });
+    }
+
     private void loadIntoForm(Asset a) {
         idField.setText(a.getId());
         categoryField.setText(a.getCategory());
-        modelField.setText(a.getModel());
+        modelField.setText(nvl(a.getModel()));
         acquiredAtPicker.setValue(a.getAcquiredAt());
         lifespanField.setText(String.valueOf(a.getLifespanYears()));
         statusCombo.setValue(a.getStatus());
     }
 
     private void refreshTable() {
-        assets.setAll(service.listAll());
+        allAssets.setAll(service.listAll());
+        applyFilter();
     }
 
     private int parseIntSafe(String text) {
@@ -176,5 +243,9 @@ public class AssetController {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.showAndWait();
+    }
+
+    private String nvl(String s) {
+        return s == null ? "" : s;
     }
 }

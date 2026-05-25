@@ -8,87 +8,75 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
-<BorderPane xmlns="http://javafx.com/javafx/21"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.ecocycle.controller.AssetController"
-            prefWidth="980.0" prefHeight="640.0"
-            stylesheets="@../css/styles.css">
+<VBox spacing="16" xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.ecocycle.controller.AssetController">
+    <padding><Insets top="16" right="20" bottom="16" left="20"/></padding>
 
-    <top>
-        <VBox spacing="4" styleClass="header">
-            <padding>
-                <Insets top="16" right="20" bottom="16" left="20"/>
-            </padding>
-            <Label text="EcoCycle Manager" styleClass="title">
-                <font><Font name="System Bold" size="22"/></font>
-            </Label>
-            <Label text="RF01 - Cadastro e gestao de ativos de hardware" styleClass="subtitle"/>
-        </VBox>
-    </top>
+    <!-- Formulario de cadastro -->
+    <VBox spacing="10" styleClass="card">
+        <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
+        <Label text="Dados do Ativo" styleClass="section-title"/>
 
-    <center>
-        <VBox spacing="16">
-            <padding>
-                <Insets top="16" right="20" bottom="16" left="20"/>
-            </padding>
+        <GridPane hgap="12" vgap="10">
+            <Label text="ID:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <TextField fx:id="idField" promptText="Ex: NB-001" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-            <!-- Formulario de cadastro -->
-            <VBox spacing="10" styleClass="card">
-                <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
-                <Label text="Dados do Ativo" styleClass="section-title"/>
+            <Label text="Categoria:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+            <TextField fx:id="categoryField" promptText="Ex: Notebook" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
 
-                <GridPane hgap="12" vgap="10">
-                    <Label text="ID:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                    <TextField fx:id="idField" promptText="Ex: NB-001" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+            <Label text="Modelo:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <TextField fx:id="modelField" promptText="Ex: Dell Latitude 5420" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-                    <Label text="Categoria:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
-                    <TextField fx:id="categoryField" promptText="Ex: Notebook" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+            <Label text="Data de Aquisicao:" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+            <DatePicker fx:id="acquiredAtPicker" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
 
-                    <Label text="Modelo:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                    <TextField fx:id="modelField" promptText="Ex: Dell Latitude 5420" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <Label text="Vida Util (anos):" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <TextField fx:id="lifespanField" promptText="Ex: 5" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-                    <Label text="Data de Aquisicao:" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
-                    <DatePicker fx:id="acquiredAtPicker" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+            <Label text="Status:" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
+            <ComboBox fx:id="statusCombo" prefWidth="220" GridPane.rowIndex="2" GridPane.columnIndex="3"/>
+        </GridPane>
 
-                    <Label text="Vida Util (anos):" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                    <TextField fx:id="lifespanField" promptText="Ex: 5" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+        <HBox spacing="10">
+            <Button fx:id="saveButton" text="Salvar" onAction="#onSave" styleClass="primary-button"/>
+            <Button fx:id="clearButton" text="Limpar" onAction="#onClear"/>
+            <Button fx:id="deleteButton" text="Remover" onAction="#onDelete" disable="true" styleClass="danger-button"/>
+        </HBox>
 
-                    <Label text="Status:" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
-                    <ComboBox fx:id="statusCombo" prefWidth="220" GridPane.rowIndex="2" GridPane.columnIndex="3"/>
-                </GridPane>
+        <Label fx:id="feedbackLabel" text=""/>
+    </VBox>
 
-                <HBox spacing="10">
-                    <Button fx:id="saveButton" text="Salvar" onAction="#onSave" styleClass="primary-button"/>
-                    <Button fx:id="clearButton" text="Limpar" onAction="#onClear"/>
-                    <Button fx:id="deleteButton" text="Remover" onAction="#onDelete" disable="true" styleClass="danger-button"/>
-                </HBox>
+    <!-- Barra de filtro (RF05) -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Filtrar por periculosidade (RF05):"/>
+        <ComboBox fx:id="hazardFilter" promptText="Todas" prefWidth="160"/>
+        <Label text="Buscar:"/>
+        <TextField fx:id="searchField" promptText="ID ou Categoria..." prefWidth="200"/>
+        <Button text="Limpar Filtro" onAction="#onClearFilter"/>
+    </HBox>
 
-                <Label fx:id="feedbackLabel" text=""/>
-            </VBox>
+    <!-- Tabela de listagem -->
+    <VBox spacing="8" styleClass="card" VBox.vgrow="ALWAYS">
+        <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
+        <Label text="Ativos cadastrados" styleClass="section-title"/>
 
-            <!-- Tabela de listagem -->
-            <VBox spacing="8" styleClass="card" VBox.vgrow="ALWAYS">
-                <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
-                <Label text="Ativos cadastrados" styleClass="section-title"/>
-
-                <TableView fx:id="assetsTable" VBox.vgrow="ALWAYS">
-                    <columns>
-                        <TableColumn fx:id="colId" text="ID" prefWidth="100"/>
-                        <TableColumn fx:id="colCategory" text="Categoria" prefWidth="130"/>
-                        <TableColumn fx:id="colModel" text="Modelo" prefWidth="200"/>
-                        <TableColumn fx:id="colAcquired" text="Aquisicao" prefWidth="110"/>
-                        <TableColumn fx:id="colLifespan" text="Vida util" prefWidth="90"/>
-                        <TableColumn fx:id="colExpiration" text="Fim previsto" prefWidth="120"/>
-                        <TableColumn fx:id="colStatus" text="Status" prefWidth="100"/>
-                    </columns>
-                </TableView>
-            </VBox>
-        </VBox>
-    </center>
-</BorderPane>
+        <TableView fx:id="assetsTable" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="colId"         text="ID"            prefWidth="90"/>
+                <TableColumn fx:id="colCategory"   text="Categoria"     prefWidth="120"/>
+                <TableColumn fx:id="colModel"      text="Modelo"        prefWidth="180"/>
+                <TableColumn fx:id="colAcquired"   text="Aquisicao"     prefWidth="100"/>
+                <TableColumn fx:id="colLifespan"   text="Vida util"     prefWidth="80"/>
+                <TableColumn fx:id="colExpiration" text="Fim previsto"  prefWidth="110"/>
+                <TableColumn fx:id="colStatus"     text="Status"        prefWidth="90"/>
+                <TableColumn fx:id="colHazard"     text="Periculosidade" prefWidth="120"/>
+                <TableColumn fx:id="colDeprec"     text="Depreciacao"   prefWidth="100"/>
+            </columns>
+        </TableView>
+    </VBox>
+</VBox>

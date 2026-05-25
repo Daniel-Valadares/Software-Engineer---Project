@@ -19,17 +19,17 @@ public class MainApp extends Application {
     public void start(Stage primaryStage) throws Exception {
         DBConnection.getInstance();
 
-        URL fxml = getClass().getResource("/fxml/AssetView.fxml");
+        URL fxml = getClass().getResource("/fxml/MainView.fxml");
         if (fxml == null) {
-            throw new IllegalStateException("AssetView.fxml nao encontrado em resources/fxml/");
+            throw new IllegalStateException("MainView.fxml nao encontrado em resources/fxml/");
         }
         Parent root = FXMLLoader.load(fxml);
 
-        Scene scene = new Scene(root, 980, 640);
+        Scene scene = new Scene(root, 1100, 720);
         primaryStage.setTitle("EcoCycle Manager - Logistica Reversa (ODS 12)");
         primaryStage.setScene(scene);
-        primaryStage.setMinWidth(900);
-        primaryStage.setMinHeight(600);
+        primaryStage.setMinWidth(960);
+        primaryStage.setMinHeight(640);
         primaryStage.show();
     }
 
